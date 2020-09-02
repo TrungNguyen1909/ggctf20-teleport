@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <script src="chall/bindings/mojo_bindings.js"></script>
+    <script src="chall/bindings/content/common/pwn.mojom.js"></script>
+    <script src="chall/bindings/services/network/public/mojom/url_loader_factory.mojom.js"></script>
+    <script src="/pwn.js"></script>
+    <script>
+        function loadServiceWorkerAndStart(){
+            if (navigator.serviceWorker.controller) {
+                    main();
+                } else {
+                    navigator.serviceWorker.register('/service_worker.js', { scope: './' }).then(function (reg) {
+                        main();
+                    }).catch(function (error) {
+                        console.log('registration failed with ' + error.message);
+                        fetch("/failed", {
+                            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                            mode: 'cors', // no-cors, *cors, same-origin
+                            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                            credentials: 'same-origin', // include, *same-origin, omit
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            redirect: 'follow', // manual, *follow, error
+                            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                            body: JSON.stringify({ 'error': error.message }) // body data type must match "Content-Type" header
+                        });
+                    });
+                }
+        }
+        if (navigator.serviceWorker) {
+            loadServiceWorkerAndStart();
+        } else {
+            console.log('no service worker');
+        }
+    </script>
+</body>
+
+</html>
