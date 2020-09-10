@@ -49,4 +49,4 @@ portrefaddr:
 porthandle:
 	dd 0
 portref:
-	db 0x28 dup(0x0)
+	times 0x28 db 0
